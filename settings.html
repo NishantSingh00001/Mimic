@@ -1,0 +1,60 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — Settings</title>
+<meta name="description" content="Theme, accent, Gemini key, saved drafts and the full feature list.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+</head><body>
+<div id="topbar"></div>
+<main class="shell"><div class="page">
+  <section class="phead" style="padding-bottom:30px"><div class="eyebrow">Preferences</div><h1><em>Settings</em>.</h1></section>
+  <div class="grid2">
+    <div class="col">
+      <section class="card"><div class="ch"><h2>Appearance</h2></div>
+        <div class="setrow"><div><div class="si">Theme</div><div class="sd">Dark or light.</div></div><button class="toggle" id="themeToggle"></button></div>
+        <div class="setrow"><div><div class="si">Accent</div><div class="sd">Recolors the interface and the light.</div></div><div class="accents" id="accents2"></div></div>
+      </section>
+      <section class="card"><div class="ch"><h2>Generative key</h2></div>
+        <div style="padding:16px 26px">
+          <div class="sd" id="keyStatus" style="margin-bottom:12px"></div>
+          <div class="fld" style="margin-top:0"><input id="keyIn2" type="password" placeholder="AIza…"></div>
+          <div style="display:flex;gap:10px;margin-top:12px"><button class="save" style="margin-top:0;width:auto;padding:12px 20px" data-press id="saveKey2">Save</button><button class="ghost" data-press id="clearKey2">Remove</button></div>
+          <div class="sd" style="margin-top:14px">Free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a>. Stored only in this browser.</div>
+        </div>
+      </section>
+    </div>
+    <div class="col">
+      <section class="card"><div class="ch"><h2>Drafts</h2><span class="k"><button class="ghost" id="saveDraft" data-press>Save current</button></span></div>
+        <div style="padding:20px"><div class="chips" id="drafts"></div></div>
+      </section>
+      <section class="card"><div class="ch"><h2>History</h2><span class="k"><button class="ghost" id="clrHist" data-press>Clear</button></span></div>
+        <div style="padding:20px"><div class="chips" id="hist"></div></div>
+      </section>
+    </div>
+  </div>
+  <section class="card" style="margin-top:24px"><div class="ch"><h2>About &amp; features</h2></div>
+    <div style="padding:20px 26px"><p style="color:var(--ink2);line-height:1.7;margin-bottom:12px;font-weight:300">Mimic is a fully client-side writing studio. Summarize, inspect and offline rewrites need no key; add a Gemini key for generative rewrite and compose. Nothing is uploaded.</p><div class="feat" id="featlist" style="text-align:left;margin:0"></div></div>
+  </section>
+</div></main>
+<script src="mimic.js"></script>
+<script>
+function syncKey(){$('keyStatus').innerHTML=hasKey()?'Status: <b style="color:var(--grn)">key active</b> — generative rewrite & compose enabled.':'Status: <b style="color:var(--mut)">no key</b> — summarize, inspect & offline rewrites still work.';$('keyIn2').value=localStorage.getItem(KEY)||'';}
+function renderDrafts(){$('drafts').innerHTML=S.drafts.length?S.drafts.map((d,i)=>'<span class="chip" data-i="'+i+'"><span class="w">'+esc((d.text||'').slice(0,26))+'…</span><span class="rm">'+icon('close',12)+'</span></span>').join(''):'<span class="empty" style="padding:10px">No drafts saved.</span>';
+  $('drafts').querySelectorAll('.chip').forEach(c=>{const i=+c.dataset.i;c.querySelector('.w').onclick=()=>{S.last=S.drafts[i].text;save();toast('Loaded into studio');location.href='summarize.html';};c.querySelector('.rm').onclick=e=>{e.stopPropagation();S.drafts.splice(i,1);save();renderDrafts();};});}
+function renderHist(){$('hist').innerHTML=S.history.length?S.history.slice(0,20).map(h=>'<span class="chip"><span class="w">'+esc(h.label)+'</span></span>').join(''):'<span class="empty" style="padding:10px">No history yet.</span>';}
+window.initPage=function(){
+  $('themeToggle').classList.toggle('on',S.settings.theme==='light');
+  $('themeToggle').onclick=()=>{toggleTheme();$('themeToggle').classList.toggle('on',S.settings.theme==='light');};
+  $('accents2').innerHTML=ACCS.map(([a,b])=>'<button class="ad'+(a===S.settings.accent?' on':'')+'" data-a="'+a+'" data-press style="width:22px;height:22px;background:linear-gradient(135deg,'+a+','+b+')"></button>').join('');
+  $('accents2').querySelectorAll('.ad').forEach(btn=>btn.onclick=()=>setAccent(btn.dataset.a,ACCS.find(x=>x[0]===btn.dataset.a)[1]));
+  syncKey();
+  $('saveKey2').onclick=()=>{const k=$('keyIn2').value.trim();if(k){localStorage.setItem(KEY,k);toast('Key saved');}syncKey();};
+  $('clearKey2').onclick=()=>{localStorage.removeItem(KEY);toast('Key removed');syncKey();};
+  $('saveDraft').onclick=()=>{const t=(S.last||'').trim();if(!t){toast('Nothing to save');return;}S.drafts.unshift({text:t,when:Date.now()});S.drafts=S.drafts.slice(0,30);save();renderDrafts();toast('Draft saved');};
+  $('clrHist').onclick=()=>{S.history=[];save();renderHist();toast('History cleared');};
+  renderDrafts();renderHist();
+  $('featlist').textContent='extractive summary · length slider · key-sentence ranking · keyword chips · compression ratio · tone: concise/formal/confident/friendly/playful · shorten · expand · paraphrase · remove filler · expand contractions · offline + Gemini rewrite · before/after · use-as-input · chars · words · sentences · paragraphs · reading time · Flesch reading ease · grade level · sentiment score · positive/negative flags · filler finder · cliché finder · adverb count · passive-voice hints · keyword extraction · templates: email/bio/tagline/cover/summary · AI continue · multi-page nav · light & dark · 5 accents · custom cursor · amber-light motion · scroll reveals · saved drafts · history · copy · download · import · keyboard shortcuts · autosave · offline-first · responsive.';
+};
+</script>
+</body></html>

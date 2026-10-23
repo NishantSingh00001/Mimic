@@ -1,0 +1,43 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — Compose</title>
+<meta name="description" content="Start from elegant templates, or continue a draft with AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+</head><body>
+<div id="topbar"></div>
+<main class="shell"><div class="page">
+  <section class="phead" style="padding-bottom:30px"><div class="eyebrow">Begin</div><h1><em>Compose</em>.</h1></section>
+  <section class="card" style="margin-bottom:24px"><div style="padding:22px">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:12px">Start from a template</div>
+    <div class="chips" id="tpls"></div>
+  </div></section>
+  <div class="grid2">
+    <div class="col"><div class="panelhead"><span class="t">Draft</span><div class="acts"><button class="btn" id="clr" data-press>Clear</button></div></div>
+      <textarea class="ta" id="inp" placeholder="Write, or pick a template above…" style="min-height:360px"></textarea></div>
+    <div class="col"><div class="panelhead"><span class="t">Assistant</span><div class="acts"><button class="btn primary" id="cont" data-press>Continue</button><button class="btn" id="cp" data-press>Copy</button></div></div>
+      <div class="hl" id="out" style="min-height:360px"></div></div>
+  </div>
+</div></main>
+<script src="mimic.js"></script>
+<script>
+const TPL={
+ email:"Subject: {subject}\n\nHi {name},\n\nI'm reaching out about {topic}. {detail}\n\nWould {time} work for a quick chat?\n\nBest,\n{you}",
+ bio:"{name} is a {role} focused on {focus}. Over the past {years} years, they have {achievement}. They care about {value} and are currently {current}.",
+ tagline:"{brand} — {promise} for {audience}.",
+ cover:"Dear {company} team,\n\nI'm applying for the {role} role. {why}. In my last role I {achievement}, and I'd bring the same {strength} to your team.\n\nThank you for your time,\n{you}",
+ summary:"In short: {point1}. {point2}. The key takeaway is {takeaway}."
+};
+async function cont(){const s=$('inp').value.trim();if(!s){toast('Write or pick a template first');return;}const out=$('out');
+  if(!hasKey()){out.innerHTML='<span style="color:var(--mut)">Add a Gemini key (top-right) to continue this draft generatively. Meanwhile, templates and the other rooms work fully offline.</span>';openKey();return;}
+  out.textContent='Writing…';try{const r=await aiRun('Continue this draft naturally in the same voice. Return only the continuation.\n\nDRAFT:\n'+s);out.textContent=r;pushHistory('compose');}catch(e){out.textContent='AI is busy — try again.';}}
+window.initPage=function(){
+  $('inp').value=S.last||'';$('inp').addEventListener('input',()=>{S.last=$('inp').value;save();});
+  $('tpls').innerHTML=Object.keys(TPL).map(k=>'<span class="chip" data-k="'+k+'">'+icon('compose',14)+k.charAt(0).toUpperCase()+k.slice(1)+'</span>').join('');
+  $('tpls').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$('inp').value=TPL[c.dataset.k];S.last=$('inp').value;save();toast('Template inserted');});
+  $('cont').onclick=cont;$('cp').onclick=()=>copyText($('inp').value,'Draft copied');
+  $('clr').onclick=()=>{$('inp').value='';S.last='';save();};
+};
+</script>
+</body></html>

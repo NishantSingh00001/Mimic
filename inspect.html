@@ -1,0 +1,41 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — Inspect</title>
+<meta name="description" content="Readability, sentiment, filler, clichés and keyword extraction.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+</head><body>
+<div id="topbar"></div>
+<main class="shell"><div class="page">
+  <section class="phead" style="padding-bottom:30px"><div class="eyebrow">Diagnose</div><h1><em>Inspect</em>.</h1></section>
+  <div class="grid2">
+    <div class="col">
+      <div class="panelhead"><span class="t">Your draft</span></div>
+      <textarea class="ta" id="inp" placeholder="Paste text to inspect…"></textarea>
+      <section class="card" style="margin-top:16px"><div class="ch"><h2>Flags</h2></div><div style="padding:20px"><div id="flags"></div></div></section>
+    </div>
+    <div class="col">
+      <section class="card"><div class="ch"><h2>Counts</h2></div><div style="padding:22px"><div class="metrics" id="metrics"></div></div></section>
+      <section class="card"><div class="ch"><h2>Readability &amp; tone</h2></div><div style="padding:22px">
+        <div class="frow"><span class="w">Reading ease</span><span class="b"><i id="feBar" style="width:0"></i></span><span class="v" id="feV">0</span></div>
+        <div class="frow" style="margin-top:10px"><span class="w">Sentiment</span><span class="b"><i id="seBar" style="width:0"></i></span><span class="v" id="seV">0</span></div>
+        <div style="color:var(--mut);font-size:12px;margin-top:12px;font-family:var(--mono)" id="gradeL"></div>
+      </div></section>
+      <section class="card"><div class="ch"><h2>Keywords</h2></div><div style="padding:20px"><div class="chips" id="kw"></div></div></section>
+    </div>
+  </div>
+</div></main>
+<script src="mimic.js"></script>
+<script>
+function render(){const s=$('inp').value;const r=readability(s);const se=sentiment(s);const fl=flags(s);const w=words(s).length;
+  $('metrics').innerHTML=[['words',w],['sentences',sentences(s).length],['reading',Math.max(1,Math.round(w/200))+'m'],['grade',r.grade],['chars',s.length],['unique',new Set(toks(s)).size]].map(([l,n])=>'<div class="metric"><div class="n"><em>'+n+'</em></div><div class="l">'+l+'</div></div>').join('');
+  $('feV').textContent=r.flesch;requestAnimationFrame(()=>{$('feBar').style.width=r.flesch+'%';$('seBar').style.width=(50+se.score/2)+'%';});
+  $('seV').textContent=(se.score>0?'+':'')+se.score;
+  $('gradeL').textContent='Grade level ~'+r.grade+' · '+(r.flesch>=60?'easy to read':r.flesch>=30?'fairly difficult':'dense');
+  const items=[];if(fl.filler.length)items.push(['filler',fl.filler.length]);if(fl.cliche.length)items.push(['clichés',fl.cliche.length]);items.push(['adverbs',fl.adverbs]);items.push(['passive hints',fl.passive]);
+  $('flags').innerHTML=items.map(([l,n])=>'<span class="flag">'+l+' <b>'+n+'</b></span>').join('')+(fl.filler.length?'<div style="color:var(--mut);font-size:12px;margin-top:12px;font-family:var(--mono)">filler: '+fl.filler.slice(0,6).join(', ')+'</div>':'');
+  const kw=keywords(s,10);$('kw').innerHTML=kw.length?kw.map(x=>'<span class="chip">'+esc(x)+'</span>').join(''):'<span style="color:var(--mut)">—</span>';}
+window.initPage=function(){$('inp').value=S.last||'';$('inp').addEventListener('input',()=>{S.last=$('inp').value;save();render();});render();};
+</script>
+</body></html>

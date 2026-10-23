@@ -1,0 +1,44 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — Rewrite</title>
+<meta name="description" content="Shift tone and length — offline presets or generative rewrite with a key.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+</head><body>
+<div id="topbar"></div>
+<main class="shell"><div class="page">
+  <section class="phead" style="padding-bottom:30px"><div class="eyebrow">Reshape</div><h1><em>Rewrite</em>.</h1></section>
+  <section class="card" style="margin-bottom:24px"><div style="padding:22px">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:12px">Tone</div>
+    <div class="segc" id="tone"></div>
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:18px 0 12px">Length</div>
+    <div class="segc" id="len"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="run" data-press>Rewrite</button><span class="k" id="mode" style="font-family:var(--mono);font-size:11px;color:var(--mut)"></span></div>
+  </div></section>
+  <div class="grid2">
+    <div class="col"><div class="panelhead"><span class="t">Before</span></div><textarea class="ta" id="inp" placeholder="Paste text to rewrite…"></textarea></div>
+    <div class="col"><div class="panelhead"><span class="t">After</span><div class="acts"><button class="btn" id="use" data-press>Use as input</button><button class="btn" id="cp" data-press>Copy</button></div></div><div class="hl" id="out" style="min-height:300px"></div></div>
+  </div>
+</div></main>
+<script src="mimic.js"></script>
+<script>
+let tone='concise',len='keep';
+const TONES=[['concise','Concise'],['formal','Formal'],['confident','Confident'],['friendly','Friendly'],['playful','Playful']];
+const LENS=[['keep','Keep'],['short','Shorten'],['long','Expand']];
+async function run(){const s=$('inp').value.trim();if(!s){toast('Paste some text');return;}const out=$('out');
+  if(hasKey()){out.textContent='Rewriting…';try{const instr='Rewrite the text in a '+tone+' tone'+(len==='short'?', about 40% shorter':len==='long'?', expanded with more detail':'')+'. Keep the meaning. Return only the rewritten text.';const r=await aiRun(instr+'\n\nTEXT:\n'+s);out.textContent=r;pushHistory('rewrite · '+tone);return;}catch(e){/* fall through */}}
+  let o=REWRITE[tone]?REWRITE[tone](s):s;if(len==='short')o=summarize(o,0.6);$('mode').textContent=hasKey()?'offline (AI busy)':'offline';out.textContent=o;pushHistory('rewrite · '+tone);}
+window.initPage=function(){
+  $('inp').value=S.last||'';$('inp').addEventListener('input',()=>{S.last=$('inp').value;save();});
+  $('tone').innerHTML=TONES.map(([v,l])=>'<button class="seg'+(v===tone?' on':'')+'" data-v="'+v+'">'+l+'</button>').join('');
+  $('len').innerHTML=LENS.map(([v,l])=>'<button class="seg'+(v===len?' on':'')+'" data-v="'+v+'">'+l+'</button>').join('');
+  $('tone').querySelectorAll('.seg').forEach(b=>b.onclick=()=>{tone=b.dataset.v;$('tone').querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));b.classList.add('on');});
+  $('len').querySelectorAll('.seg').forEach(b=>b.onclick=()=>{len=b.dataset.v;$('len').querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));b.classList.add('on');});
+  $('mode').textContent=hasKey()?'generative (key active)':'offline presets · add a key for generative';
+  $('run').onclick=run;
+  $('use').onclick=()=>{if($('out').textContent){$('inp').value=$('out').textContent;S.last=$('inp').value;save();toast('Moved to input');}};
+  $('cp').onclick=()=>copyText($('out').textContent,'Copied');
+};
+</script>
+</body></html>

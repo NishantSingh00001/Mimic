@@ -1,0 +1,44 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — Summarize</title>
+<meta name="description" content="Extractive summarization with adjustable length, key sentences and keywords.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+</head><body>
+<div id="topbar"></div>
+<main class="shell"><div class="page">
+  <section class="phead" style="padding-bottom:30px"><div class="eyebrow">Distil</div><h1><em>Summarize</em>.</h1></section>
+  <div class="grid2">
+    <div class="col">
+      <div class="panelhead"><span class="t">Your draft</span><div class="acts"><button class="btn" id="imp" data-press>Import</button></div></div>
+      <textarea class="ta" id="inp" placeholder="Paste a long passage…"></textarea>
+      <div class="slider" style="margin-top:16px"><span>Short</span><input type="range" id="ratio" min="15" max="75" value="35"><span>Full</span><span style="color:var(--acc)" id="ratioV">35%</span></div>
+      <input type="file" id="file" accept=".txt,.md,text/*" style="display:none">
+    </div>
+    <div class="col">
+      <section class="card"><div class="ch"><h2>Summary</h2><span class="k" id="ratioK"></span></div>
+        <div style="padding:22px"><div class="ta out" id="out" style="min-height:160px;border:none;background:transparent;padding:0"></div>
+          <div style="display:flex;gap:8px;margin-top:16px"><button class="btn" id="cp" data-press>Copy</button><button class="btn" id="dlb" data-press>Download</button></div></div>
+      </section>
+      <section class="card"><div class="ch"><h2>Keywords</h2></div><div style="padding:20px"><div class="chips" id="kw"></div></div></section>
+    </div>
+  </div>
+</div></main>
+<script src="mimic.js"></script>
+<script>
+function render(){const s=$('inp').value;const ratio=+$('ratio').value/100;$('ratioV').textContent=$('ratio').value+'%';
+  const sum=summarize(s,ratio);$('out').textContent=sum||'—';
+  const orig=words(s).length,red=words(sum).length;$('ratioK').textContent=orig?Math.round((1-red/orig)*100)+'% shorter':'';
+  const kw=keywords(s,10);$('kw').innerHTML=kw.length?kw.map(w=>'<span class="chip">'+esc(w)+'</span>').join(''):'<span style="color:var(--mut)">—</span>';}
+window.initPage=function(){
+  $('inp').value=S.last||'';
+  $('inp').addEventListener('input',()=>{S.last=$('inp').value;save();render();});
+  $('ratio').addEventListener('input',render);
+  $('cp').onclick=()=>copyText($('out').textContent,'Summary copied');
+  $('dlb').onclick=()=>dl('mimic-summary.txt','text/plain',$('out').textContent);
+  $('imp').onclick=()=>$('file').click();$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('inp').value=r.result;S.last=r.result;save();render();};r.readAsText(f);};
+  render();
+};
+</script>
+</body></html>

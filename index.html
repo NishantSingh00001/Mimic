@@ -1,0 +1,112 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mimic — a writing studio</title>
+<meta name="description" content="An on-device writing studio: summarize, rewrite, inspect and compose. 50+ tools, offline-first, with optional Gemini. Nothing uploaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="mimic.css">
+<style>
+.home{position:relative;z-index:3}
+.hero2{min-height:calc(100vh - 74px);display:flex;align-items:center;padding:20px 0 40px}
+.hero2-in{max-width:1200px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;width:100%}
+@media(max-width:980px){.hero2-in{grid-template-columns:1fr;gap:28px;padding:0 20px}.hero2{min-height:auto;padding:40px 0}}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--acc);margin-bottom:28px}
+.hero2 h1{font-family:var(--serif);font-weight:300;font-size:clamp(52px,8vw,118px);line-height:.96;letter-spacing:-.025em}
+.hero2 h1 em{font-style:italic;color:var(--acc)}
+.hero2 p{margin-top:28px;max-width:420px;font-size:18px;line-height:1.75;color:var(--ink2);font-weight:300}
+.cta-row{margin-top:38px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.btn-xl{display:inline-flex;align-items:center;gap:12px;background:var(--acc);color:#1a1206;font-family:var(--serif);font-size:16px;padding:16px 30px;border-radius:999px;transition:transform .3s,box-shadow .3s;box-shadow:0 18px 44px -18px var(--acc)}
+.btn-xl:hover{transform:translateY(-2px)}
+.btn-ghost{color:var(--ink2);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:14px 6px}
+.btn-ghost:hover{color:var(--acc)}
+.metastrip{margin-top:52px;display:flex;gap:48px;flex-wrap:wrap}
+.metastrip .m .n{font-family:var(--serif);font-weight:300;font-size:32px;line-height:1}
+.metastrip .m .n em{font-style:normal;color:var(--acc)}
+.metastrip .m .l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-top:8px}
+/* typewriter visual */
+.writer{position:relative;border:1px solid var(--hair);border-radius:var(--r2);background:var(--panel);backdrop-filter:var(--glass);padding:48px 44px;min-height:360px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.writer::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc),transparent)}
+.writer .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:24px}
+.writer .q{font-family:var(--serif);font-weight:300;font-size:clamp(26px,3.2vw,40px);line-height:1.25;letter-spacing:-.01em;color:var(--ink);min-height:2.5em}
+.writer .q em{font-style:italic;color:var(--acc)}
+.writer .caret{display:inline-block;width:3px;height:1em;background:var(--acc);vertical-align:text-bottom;animation:blink 1s step-end infinite;margin-left:3px;transform:translateY(3px)}
+@keyframes blink{50%{opacity:0}}
+.writer .sig{margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--dim)}
+.marquee2{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);overflow:hidden;padding:20px 0;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marq-track{display:flex;width:max-content;animation:marq 34s linear infinite;font-family:var(--mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
+.marq-track span{display:flex;align-items:center;gap:34px;padding-right:34px}
+.marq-track b{color:var(--acc);font-weight:500}
+@keyframes marq{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.marq-track{animation:none}}
+.feat2{max-width:1200px;margin:0 auto;padding:92px 40px 40px}
+@media(max-width:980px){.feat2{padding:56px 20px 20px}}
+.feat2-head{margin-bottom:44px;max-width:640px}
+.feat2-head h2{font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.4vw,56px);line-height:1.02;letter-spacing:-.02em}
+.feat2-head p{color:var(--mut);font-size:15px;margin-top:16px;font-weight:300}
+.feat2-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:820px){.feat2-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.feat2-grid{grid-template-columns:1fr}}
+.fcell{position:relative;padding:30px;border-radius:var(--r2);background:var(--panel);backdrop-filter:var(--glass);border:1px solid var(--hair);min-height:210px;display:flex;flex-direction:column;overflow:hidden;transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .5s}
+.fcell:hover{transform:translateY(-5px);border-color:var(--glassbrd)}
+.fcell .fi{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--acc);border:1px solid var(--glassbrd);margin-bottom:auto}
+.fcell .fx{position:absolute;top:30px;right:30px;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.fcell h3{font-family:var(--serif);font-weight:400;font-size:22px;margin-top:24px;letter-spacing:-.01em}
+.fcell p{color:var(--mut);font-size:13.5px;line-height:1.6;margin-top:9px}
+.fcell .go{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-top:16px;display:flex;align-items:center;gap:8px}
+.fcell .go .ic{transition:transform .4s}.fcell:hover .go .ic{transform:translateX(5px)}
+.cta2{max-width:1200px;margin:32px auto 0;padding:0 40px}
+.cta2-in{position:relative;overflow:hidden;border-radius:var(--r2);border:1px solid var(--hair);padding:76px 40px;text-align:center;background:var(--panel);backdrop-filter:var(--glass)}
+.cta2-in::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 150% at 50% 0%,color-mix(in srgb,var(--acc) 16%,transparent),transparent 60%)}
+.cta2-in h2{position:relative;font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.6vw,58px);line-height:1;letter-spacing:-.02em}
+.cta2-in h2 em{font-style:italic;color:var(--acc)}
+.cta2-in .btn-xl{position:relative;margin-top:28px}
+.feat{padding-top:40px}
+</style>
+</head><body>
+<div id="topbar"></div>
+<main class="home">
+  <section class="hero2">
+    <div class="hero2-in">
+      <div class="hero2-copy reveal">
+        <div class="kicker">On-device writing studio</div>
+        <h1>Write less.<br>Say <em>more</em>.</h1>
+        <p>Summarize, rewrite, inspect and compose — the craft of editing, in your browser. Core tools run offline; add a key for generative polish.</p>
+        <div class="cta-row"><a class="btn-xl" href="summarize.html" data-mag>Open the studio</a><a class="btn-ghost" href="inspect.html">inspect a draft</a></div>
+        <div class="metastrip" id="meta"></div>
+      </div>
+      <div class="hero2-visual reveal">
+        <div class="writer"><div class="lbl">The editor's desk</div><div class="q" id="q"></div><div class="sig">— on writing well</div></div>
+      </div>
+    </div>
+  </section>
+  <div class="marquee2"><div class="marq-track" id="marq"></div></div>
+  <section class="feat2">
+    <div class="feat2-head reveal"><h2>The craft of editing, made effortless.</h2><p>Five focused rooms, one shared draft — everything private to your browser.</p></div>
+    <div class="feat2-grid" id="fgrid"></div>
+  </section>
+  <section class="cta2"><div class="cta2-in reveal"><h2>Bring a draft. Leave with <em>clarity</em>.</h2><a class="btn-xl" href="summarize.html" data-mag>Start writing</a></div></section>
+  <div class="foot">Mimic · summarize, inspect & offline rewrites work with no key · nothing is uploaded</div>
+  <div class="feat" id="featlist"></div>
+</main>
+<script src="mimic.js"></script>
+<script>
+window.initPage=function(){
+  const a=readability(S.last||'');const w=words(S.last||'').length;
+  $('meta').innerHTML=[['words',w],['read time',Math.max(1,Math.round(w/200))+'m'],['ease',a.flesch]].map(([l,n])=>'<div class="m"><div class="n"><em>'+n+'</em></div><div class="l">'+l+'</div></div>').join('');
+  const tags=['extractive summary','tone rewrite','readability','sentiment','keyword extraction','filler finder','paraphrase','templates','compose','offline first'];
+  $('marq').innerHTML='<span>'+tags.map(t=>'<b>'+t+'</b>').join(' · ')+' · </span><span>'+tags.map(t=>'<b>'+t+'</b>').join(' · ')+' · </span>';
+  const F=[['summarize.html','summarize','Summarize','Distil long text to its key sentences, with keywords and ratio.'],['rewrite.html','rewrite','Rewrite','Shift tone and length — offline presets or generative with a key.'],['inspect.html','inspect','Inspect','Readability, sentiment, filler, clichés and keyword extraction.'],['compose.html','compose','Compose','Start from elegant templates, or continue a draft with AI.'],['settings.html','settings','Settings','Theme, accent, key, saved drafts and private data.'],['summarize.html','spark','Begin','Paste a draft and let the studio do the rest.']];
+  $('fgrid').innerHTML=F.map(([h,ic,t,d],i)=>'<a class="fcell" href="'+h+'"><div class="fi">'+icon(ic,22)+'</div><div class="fx">0'+(i+1)+'</div><h3>'+t+'</h3><p>'+d+'</p><div class="go">Enter '+icon('chevron',13)+'</div></a>').join('');
+  $('featlist').textContent='50+ tools — extractive summary · length slider · key-sentence highlight · keyword chips · compression ratio · sentence ranking · tone formal/friendly/confident/concise/playful · shorten · expand · paraphrase · remove filler · fix spacing · headline case · offline + Gemini rewrite · before/after · chars · words · sentences · paragraphs · reading time · Flesch score · grade level · sentiment · positive/negative flags · filler words · clichés · adverb count · passive hints · keyword extraction · templates (email/bio/tagline/cover/summary) · variable fills · AI continue · chat · multi-page · light & dark · accents · custom cursor · amber-light motion · scroll reveals · saved drafts · history · copy · download · import · shortcuts · autosave · offline · responsive.';
+  typeWriter();
+};
+function typeWriter(){const lines=['Clarity is kindness.','Say what you mean, then <em>stop</em>.','A short sentence lands hardest.','Cut until it breathes.','Trust the <em>reader</em>.','Remove the clutter; ideas breathe.'];
+  const el=$('q');if(!el)return;const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches;let li=0;
+  function plain(s){return s.replace(/<[^>]+>/g,'');}
+  function render(s,withCaret){el.innerHTML=s+(withCaret?'<span class="caret"></span>':'');}
+  function type(){const full=lines[li%lines.length];const p=plain(full);if(reduceM){render(full,true);li++;setTimeout(type,2600);return;}
+    let i=0;(function step(){if(i<=p.length){render(p.slice(0,i),true);i++;setTimeout(step,42);}else{render(full,true);setTimeout(()=>{li++;type();},2400);}})();}
+  type();
+}
+</script>
+</body></html>
